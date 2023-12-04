@@ -32,4 +32,22 @@ class CategoryTest extends TestCase
                 'description' => $category->description,
             ]);
     }
+
+    /** @test */
+    public function a_category_can_be_retrieved()
+    {
+        $this->withoutExceptionHandling();
+
+        $category = Category::factory()->create();
+        $response = $this->get('/api/categories/' . $category->id);
+
+        $this->assertCount(1, Category::all());
+        $response->assertStatus(200)
+            ->assertJson([
+                'id' => $category->id,
+                'name' => $category->name,
+                'rank' => $category->rank,
+                'description' => $category->description,
+            ]);
+    }
 }

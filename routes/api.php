@@ -17,4 +17,5 @@ use Illuminate\Support\Facades\Route;
 
 Route::middleware([])->group(function () {
     Route::post('categories', [CategoryController::class, 'store']);
+    Route::get('categories/{category}', [CategoryController::class, 'show']);
 });

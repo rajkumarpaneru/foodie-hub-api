@@ -22,6 +22,7 @@ class CategoryController extends Controller
         $validated = $request->validate([
             'name' => 'required|max:191|unique:categories,name',
             'rank' => 'required|integer|min:1',
+            'description' => 'nullable'
         ]);
 
         $category = Category::create($validated);

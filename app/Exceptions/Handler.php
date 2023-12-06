@@ -2,7 +2,15 @@
 
 namespace App\Exceptions;
 
+use Carbon\Exceptions\InvalidFormatException;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Http\Exceptions\PostTooLargeException;
+use Illuminate\Queue\InvalidPayloadException;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\ValidationException;
+use League\OAuth2\Server\Exception\OAuthServerException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Throwable;
 
 class Handler extends ExceptionHandler
@@ -46,5 +54,84 @@ class Handler extends ExceptionHandler
         $this->reportable(function (Throwable $e) {
             //
         });
+    }
+
+    public function render($request, Throwable $exception)
+    {
+        $log = true;
+//        if ($exception instanceof OAuthServerException && $exception->getCode() == 9) {
+//            $log = false;
+//        }
+
+        if ($exception instanceof NotFoundHttpException) {
+            $log = false;
+        }
+
+        if ($exception instanceof ValidationException) {
+            $log = false;
+        }
+
+        if ($log) {
+            Log::error($exception->getMessage(), ['exception' => $exception]);
+        }
+
+        if ($exception instanceof PostTooLargeException) {
+            $response = [
+                'message' => 'File too large',
+            ];
+            return response()->json($response, 413);
+        }
+
+        if ($exception instanceof NotFoundHttpException) {
+
+            $response = [
+                'message' => 'Url not found',
+            ];
+            if ($request->expectsJson()) {
+                return response()->json($response, 404);
+            } else {
+                return redirect()->route('home');
+            }
+        }
+
+        if ($exception instanceof ValidationException) {
+            $errors = $exception->validator->errors();
+            $messages = [];
+            foreach ($errors->messages() as $key => $message) {
+                $messages[$key] = $message[0];
+            }
+            $response = [
+                'errors' => $messages,
+            ];
+            return response()->json($response, 422);
+        }
+
+        if ($exception instanceof InvalidPayloadException) {
+            $response = [
+                'message' => $exception->getMessage(),
+            ];
+            return response()->json($response, 400);
+        }
+
+        if ($exception instanceof ModelNotFoundException) {
+//            $model = strtolower(class_basename($exception->getModel()));
+
+            $message = "No records found with given data.";
+            $response = [
+                'message' => $message,
+            ];
+            return response()->json($response, 404);
+        }
+
+        if ($exception instanceof InvalidFormatException) {
+            $response = [
+                'message' => "Invalid format",
+            ];
+            return response()->json($response, 400);
+        }
+        if (config('app.debug')) {
+            return parent::render($request, $exception);
+        }
+        return parent::render($request, $exception);
     }
 }

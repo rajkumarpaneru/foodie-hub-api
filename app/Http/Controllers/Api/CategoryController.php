@@ -12,7 +12,7 @@ class CategoryController extends Controller
 {
     public function index(): JsonResponse
     {
-        $categories = Category::get();
+        $categories = Category::query()->orderBy('created_at', 'ASC')->get();
         $response = CategoryResource::make($categories);
         return response()->json($response);
     }
@@ -53,6 +53,9 @@ class CategoryController extends Controller
     public function destroy(Category $category): JsonResponse
     {
         $category->delete();
-        return response()->json(null, 204);
+
+        return response()->json([
+            'id' => $category->id,
+        ], 200);
     }
 }

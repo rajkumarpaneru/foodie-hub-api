@@ -3,8 +3,9 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\ProductResource;
+use App\Http\Resources\ProductResource;
 use App\Models\Product;
+use App\Rules\UniqueForTheCategory;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -20,8 +21,10 @@ class ProductController extends Controller
     public function store(Request $request): JsonResponse
     {
         $validated = $request->validate([
-            'name' => 'required|max:191',
+            'category_id' => 'required|exists:categories,id',
+            'name' => ['required', 'max:191', new UniqueForTheCategory($request->category_id)],
             'rank' => 'required|integer|min:1',
+            'description' => 'nullable'
         ]);
 
         $product = Product::create($validated);
@@ -38,8 +41,10 @@ class ProductController extends Controller
     public function update(Request $request, Product $product): JsonResponse
     {
         $validated = $request->validate([
-            'name' => 'required|max:191',
+            'category_id' => 'required|exists:categories,id',
+            'name' => ['required', 'max:191', new UniqueForTheCategory($request->category_id, $product)],
             'rank' => 'required|integer|min:1',
+            'description' => 'nullable'
         ]);
 
         $product->update($validated);
@@ -52,6 +57,8 @@ class ProductController extends Controller
     public function destroy(Product $product): JsonResponse
     {
         $product->delete();
-        return response()->json(null, 204);
+        return response()->json([
+            'id' => $product->id,
+        ], 200);
     }
 }

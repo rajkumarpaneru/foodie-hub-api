@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Models\Category;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
+use Illuminate\Http\UploadedFile;
 use Tests\TestCase;
 
 class CategoryTest extends TestCase
@@ -12,9 +13,9 @@ class CategoryTest extends TestCase
     use RefreshDatabase;
 
     /** @test */
-    public function a_categories_can_be_listed()
+    public function categories_can_be_listed()
     {
-        $this->withoutExceptionHandling();
+//        $this->withoutExceptionHandling();
 
         $categories = Category::factory()->count(2)->create();
         $response = $this->get('/api/categories');
@@ -25,11 +26,15 @@ class CategoryTest extends TestCase
                 'id' => $categories->first()->id,
                 'name' => $categories->first()->name,
                 'rank' => $categories->first()->rank,
+                'image_url' => null,
+                'thumbnail_url' => null,
                 'description' => $categories->first()->description,
             ], [
                 'id' => $categories->last()->id,
                 'name' => $categories->last()->name,
                 'rank' => $categories->last()->rank,
+                'image_url' => null,
+                'thumbnail_url' => null,
                 'description' => $categories->last()->description,
             ]]);
     }
@@ -43,6 +48,7 @@ class CategoryTest extends TestCase
             'name' => 'Appetizers',
             'description' => 'Small portion',
             'rank' => 1,
+            'image' => UploadedFile::fake()->image('test_image.jpg'),
         ]);
 
         $category = Category::first();
@@ -52,6 +58,8 @@ class CategoryTest extends TestCase
                 'id' => $category->id,
                 'name' => $category->name,
                 'rank' => $category->rank,
+                'image_url' => 'http://localhost/storage/1/test_image.jpg',
+                'thumbnail_url' => 'http://localhost/storage/1/conversions/test_image-thumb.jpg',
                 'description' => $category->description,
             ]);
     }
@@ -181,6 +189,8 @@ class CategoryTest extends TestCase
                 'id' => $category->id,
                 'name' => $category->name,
                 'rank' => $category->rank,
+                'image_url' => null,
+                'thumbnail_url' => null,
                 'description' => $category->description,
             ]);
     }
@@ -205,6 +215,8 @@ class CategoryTest extends TestCase
                 'id' => $updated_category->id,
                 'name' => $updated_category->name,
                 'rank' => $updated_category->rank,
+                'image_url' => null,
+                'thumbnail_url' => null,
                 'description' => $updated_category->description,
             ]);
     }

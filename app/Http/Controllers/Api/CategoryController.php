@@ -13,7 +13,7 @@ class CategoryController extends Controller
     public function index(): JsonResponse
     {
         $categories = Category::query()->orderBy('created_at', 'ASC')->get();
-        $response = CategoryResource::make($categories);
+        $response = CategoryResource::collection($categories);
         return response()->json($response);
     }
 
@@ -22,10 +22,20 @@ class CategoryController extends Controller
         $validated = $request->validate([
             'name' => 'required|max:191|unique:categories,name',
             'rank' => 'required|integer|min:1',
-            'description' => 'nullable'
+            'description' => 'nullable',
+            'image' => ['required', 'image', 'mimes:jpg,jpeg,png', 'max:5120'],
         ]);
 
-        $category = Category::create($validated);
+        $category = Category::create([
+            'name' => $validated['name'],
+            'rank' => $validated['rank'],
+            'description' => $validated['description']
+        ]);
+
+        $category->addMedia($validated['image'])
+            ->usingName('image')
+            ->toMediaCollection();
+
         $response = CategoryResource::make($category);
         return response()->json($response);
     }
@@ -41,10 +51,21 @@ class CategoryController extends Controller
         $validated = $request->validate([
             'name' => 'required|max:191|unique:categories,name,' . $category->id,
             'rank' => 'required|integer|min:1',
+            'description' => 'nullable',
+            'image' => ['nullable', 'image', 'mimes:jpg,jpeg,png', 'max:5120'],
         ]);
 
         $category->update($validated);
         $category->refresh();
+
+        if (isset($validated['image'])) {
+            $media = $category->getMedia()->where('name', 'image')->first();
+            if ($media) $media->delete();
+
+            $category->addMedia($validated['image'])
+                ->usingName('image')
+                ->toMediaCollection();
+        }
 
         $response = CategoryResource::make($category);
         return response()->json($response);

@@ -24,10 +24,21 @@ class ProductController extends Controller
             'category_id' => 'required|exists:categories,id',
             'name' => ['required', 'max:191', new UniqueForTheCategory($request->category_id)],
             'rank' => 'required|integer|min:1',
-            'description' => 'nullable'
+            'description' => 'nullable',
+            'image' => ['required', 'image', 'mimes:jpg,jpeg,png', 'max:5120'],
         ]);
 
-        $product = Product::create($validated);
+        $product = Product::create([
+            'category_id' => $validated['category_id'],
+            'name' => $validated['name'],
+            'rank' => $validated['rank'],
+            'description' => $validated['description'],
+        ]);
+
+        $product->addMedia($validated['image'])
+            ->usingName('image')
+            ->toMediaCollection();
+
         $response = ProductResource::make($product);
         return response()->json($response);
     }
@@ -44,10 +55,25 @@ class ProductController extends Controller
             'category_id' => 'required|exists:categories,id',
             'name' => ['required', 'max:191', new UniqueForTheCategory($request->category_id, $product)],
             'rank' => 'required|integer|min:1',
-            'description' => 'nullable'
+            'description' => 'nullable',
+            'image' => ['required', 'image', 'mimes:jpg,jpeg,png', 'max:5120'],
         ]);
 
-        $product->update($validated);
+        $product->update([
+            'category_id' => $validated['category_id'],
+            'name' => $validated['name'],
+            'rank' => $validated['rank'],
+            'description' => $validated['description'],
+        ]);
+
+        if (isset($validated['image'])) {
+            $media = $product->getMedia()->where('name', 'image')->first();
+            if ($media) $media->delete();
+
+            $product->addMedia($validated['image'])
+                ->usingName('image')
+                ->toMediaCollection();
+        }
         $product->refresh();
 
         $response = ProductResource::make($product);

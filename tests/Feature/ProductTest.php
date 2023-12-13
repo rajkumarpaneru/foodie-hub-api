@@ -6,6 +6,8 @@ use App\Models\Category;
 use App\Models\Product;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
 
 class ProductTest extends TestCase
@@ -24,10 +26,12 @@ class ProductTest extends TestCase
             'name' => 'Appetizers',
             'description' => 'Small portion',
             'rank' => 1,
+            'image' => UploadedFile::fake()->image('test_image.jpg'),
         ]);
 
         $product = Product::first();
         $this->assertCount(1, Product::all());
+        $this->assertEquals(1, DB::table('media')->count());
         $response->assertStatus(200)
             ->assertJson([
                 'id' => $product->id,
@@ -37,6 +41,8 @@ class ProductTest extends TestCase
                 ],
                 'name' => $product->name,
                 'rank' => $product->rank,
+                'image_url' => 'http://localhost/storage/1/test_image.jpg',
+                'thumbnail_url' => 'http://localhost/storage/1/conversions/test_image-thumb.jpg',
                 'description' => $product->description,
             ]);
     }
@@ -96,15 +102,21 @@ class ProductTest extends TestCase
 
         $product = Product::factory()->create();
         $category = Category::factory()->create();
+        $image = UploadedFile::fake()->image('test_image1.jpg');
+        $product->addMedia($image)
+            ->usingName('image')
+            ->toMediaCollection();
 
         $response = $this->post('/api/products/' . $product->id, [
             'category_id' => $category->id,
             'name' => 'Veg Pakora',
             'description' => 'Deep fried veggies in lentil flour',
             'rank' => 2,
+            'image' => UploadedFile::fake()->image('test_image2.jpg'),
         ]);
 
         $updated_product = Product::first();
+        $updated_product->refresh();
         $this->assertCount(1, Product::all());
         $response->assertStatus(200)
             ->assertJson([
@@ -115,6 +127,8 @@ class ProductTest extends TestCase
                 ],
                 'name' => $updated_product->name,
                 'rank' => $updated_product->rank,
+                'image_url' => 'http://localhost/storage/2/test_image2.jpg',
+                'thumbnail_url' => 'http://localhost/storage/2/conversions/test_image2-thumb.jpg',
                 'description' => $updated_product->description,
             ]);
     }
@@ -174,6 +188,7 @@ class ProductTest extends TestCase
             'name' => $product1->name,
             'description' => 'Small portion',
             'rank' => 1,
+            'image' => UploadedFile::fake()->image('test_image.jpg'),
         ]);
         $product1->refresh();
         $this->assertEquals($name1, $product1->name);
@@ -205,6 +220,25 @@ class ProductTest extends TestCase
             ->assertJson([
                 'id' => $product->id,
             ]);
+    }
+
+    /** @test */
+    public function associated_image_is_also_deleted_while_deleting_product()
+    {
+//        $this->withoutExceptionHandling();
+
+        $product = Product::factory()->create();
+
+        $image = UploadedFile::fake()->image('test_image.jpg');
+        $product->addMedia($image)
+            ->usingName('image')
+            ->toMediaCollection();
+
+        $this->assertEquals(1, DB::table('media')->count());
+
+        $this->delete('/api/products/' . $product->id);
+
+        $this->assertEquals(0, DB::table('media')->count());
     }
 
 }

@@ -55,8 +55,11 @@ class CategoryController extends Controller
             'image' => ['nullable', 'image', 'mimes:jpg,jpeg,png', 'max:5120'],
         ]);
 
-        $category->update($validated);
-        $category->refresh();
+        $category->update([
+            'name' => $validated['name'],
+            'rank' => $validated['rank'],
+            'description' => $validated['description']
+        ]);
 
         if (isset($validated['image'])) {
             $media = $category->getMedia()->where('name', 'image')->first();
@@ -66,13 +69,16 @@ class CategoryController extends Controller
                 ->usingName('image')
                 ->toMediaCollection();
         }
-
+        $category->refresh();
         $response = CategoryResource::make($category);
         return response()->json($response);
     }
 
     public function destroy(Category $category): JsonResponse
     {
+//        $media = $category->getMedia()->where('name', 'image')->first();
+//        if ($media) $media->delete();
+
         $category->delete();
 
         return response()->json([

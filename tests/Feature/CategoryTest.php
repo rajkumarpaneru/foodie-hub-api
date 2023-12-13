@@ -6,6 +6,7 @@ use App\Models\Category;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
 
 class CategoryTest extends TestCase
@@ -201,22 +202,28 @@ class CategoryTest extends TestCase
         $this->withoutExceptionHandling();
 
         $category = Category::factory()->create();
+        $image = UploadedFile::fake()->image('test_image1.jpg');
+        $category->addMedia($image)
+            ->usingName('image')
+            ->toMediaCollection();
 
         $response = $this->post('/api/categories/' . $category->id, [
             'name' => 'Appetizers',
             'description' => 'Small portion',
             'rank' => 1,
+            'image' => UploadedFile::fake()->image('test_image2.jpg'),
         ]);
 
         $updated_category = Category::first();
+        $updated_category->refresh();
         $this->assertCount(1, Category::all());
         $response->assertStatus(200)
             ->assertJson([
                 'id' => $updated_category->id,
                 'name' => $updated_category->name,
                 'rank' => $updated_category->rank,
-                'image_url' => null,
-                'thumbnail_url' => null,
+                'image_url' => 'http://localhost/storage/2/test_image2.jpg',
+                'thumbnail_url' => 'http://localhost/storage/2/conversions/test_image2-thumb.jpg',
                 'description' => $updated_category->description,
             ]);
     }
@@ -235,6 +242,25 @@ class CategoryTest extends TestCase
             ->assertJson([
                 'id' => $category->id,
             ]);
+    }
+
+    /** @test */
+    public function associated_image_is_also_deleted_while_deleting_category()
+    {
+//        $this->withoutExceptionHandling();
+
+        $category = Category::factory()->create();
+
+        $image = UploadedFile::fake()->image('test_image1.jpg');
+        $category->addMedia($image)
+            ->usingName('image')
+            ->toMediaCollection();
+
+        $this->assertEquals(1, DB::table('media')->count());
+
+        $this->delete('/api/categories/' . $category->id);
+
+        $this->assertEquals(0, DB::table('media')->count());
     }
 
 }

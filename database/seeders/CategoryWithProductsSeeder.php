@@ -5,6 +5,7 @@ namespace Database\Seeders;
 
 use App\Models\Category;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\File;
 
 class CategoryWithProductsSeeder extends Seeder
 {
@@ -94,20 +95,38 @@ class CategoryWithProductsSeeder extends Seeder
             ],
         ];
 
+        // Get the path to the public/images folder
+        $path = public_path('images');
+
+        $files = File::allFiles($path);
+//        $files_count = count($files);
+        // Check if the directory exists
+        $i = 0;
         foreach ($menu as $category_name => $products) {
             $category = Category::create([
                 'name' => $category_name,
                 'description' => $category_name,
                 'rank' => rand(1, 20),
             ]);
+            $category_image = $files[$i++];
+
+            $category->addMedia($category_image)
+                ->usingName('image')
+                ->toMediaCollection();
 
             foreach ($products as $p) {
-                $category->products()->create([
+                $product = $category->products()->create([
                     'name' => $p['name'],
                     'rank' => rand(1, 20),
                     'description' => $p['description'],
                     'price' => $p['price'],
                 ]);
+
+                $product_image = $files[$i++];
+
+                $product->addMedia($product_image)
+                    ->usingName('image')
+                    ->toMediaCollection();
             }
         }
     }

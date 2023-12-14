@@ -14,6 +14,11 @@ class Category extends Model implements HasMedia
 
     protected $guarded = [];
 
+    public function products()
+    {
+        return $this->hasMany(Product::class);
+    }
+
     public function registerMediaConversions(Media $media = null): void
     {
         $this->addMediaConversion('thumb')

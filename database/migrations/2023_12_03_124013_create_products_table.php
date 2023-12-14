@@ -19,6 +19,7 @@ return new class extends Migration {
             $table->string('name');
             $table->unsignedSmallInteger('rank');
             $table->text('description')->nullable();
+            $table->decimal('price', 5, 2);
             $table->timestamps();
         });
     }

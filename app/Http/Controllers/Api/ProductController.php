@@ -15,7 +15,9 @@ class ProductController extends Controller
     {
         $products = Product::get();
         $response = ProductResource::collection($products);
-        return response()->json($response);
+        return response()->json([
+            'data' => $response,
+        ]);
     }
 
     public function store(Request $request): JsonResponse

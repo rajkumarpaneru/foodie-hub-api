@@ -14,7 +14,7 @@ class ProductController extends Controller
     public function index(): JsonResponse
     {
         $products = Product::get();
-        $response = ProductResource::make($products);
+        $response = ProductResource::collection($products);
         return response()->json($response);
     }
 

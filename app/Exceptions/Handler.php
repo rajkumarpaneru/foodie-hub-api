@@ -87,11 +87,7 @@ class Handler extends ExceptionHandler
             $response = [
                 'message' => 'Url not found',
             ];
-            if ($request->expectsJson()) {
-                return response()->json($response, 404);
-            } else {
-                return redirect()->route('home');
-            }
+            return response()->json($response, 404);
         }
 
         if ($exception instanceof ValidationException) {

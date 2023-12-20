@@ -26,6 +26,7 @@ class ProductTest extends TestCase
             'name' => 'Appetizers',
             'description' => 'Small portion',
             'rank' => 1,
+            'price' => 10,
             'image' => UploadedFile::fake()->image('test_image.jpg'),
         ]);
 
@@ -41,8 +42,9 @@ class ProductTest extends TestCase
                 ],
                 'name' => $product->name,
                 'rank' => $product->rank,
-                'image_url' => 'http://localhost/storage/1/test_image.jpg',
-                'thumbnail_url' => 'http://localhost/storage/1/conversions/test_image-thumb.jpg',
+                'price' => $product->price,
+                'image_url' => 'http://127.0.0.1:8000/storage/1/test_image.jpg',
+                'thumbnail_url' => 'http://127.0.0.1:8000/storage/1/conversions/test_image-thumb.jpg',
                 'description' => $product->description,
             ]);
     }
@@ -112,6 +114,7 @@ class ProductTest extends TestCase
             'name' => 'Veg Pakora',
             'description' => 'Deep fried veggies in lentil flour',
             'rank' => 2,
+            'price' => 20,
             'image' => UploadedFile::fake()->image('test_image2.jpg'),
         ]);
 
@@ -127,8 +130,9 @@ class ProductTest extends TestCase
                 ],
                 'name' => $updated_product->name,
                 'rank' => $updated_product->rank,
-                'image_url' => 'http://localhost/storage/2/test_image2.jpg',
-                'thumbnail_url' => 'http://localhost/storage/2/conversions/test_image2-thumb.jpg',
+                'price' => $updated_product->price,
+                'image_url' => 'http://127.0.0.1:8000/storage/2/test_image2.jpg',
+                'thumbnail_url' => 'http://127.0.0.1:8000/storage/2/conversions/test_image2-thumb.jpg',
                 'description' => $updated_product->description,
             ]);
     }
@@ -155,6 +159,7 @@ class ProductTest extends TestCase
             'name' => $name2,
             'description' => 'Small portion',
             'rank' => 1,
+            'price' => 15,
         ]);
 
         $this->assertEquals($name1, $product1->name);
@@ -188,6 +193,7 @@ class ProductTest extends TestCase
             'name' => $product1->name,
             'description' => 'Small portion',
             'rank' => 1,
+            'price' => 15,
             'image' => UploadedFile::fake()->image('test_image.jpg'),
         ]);
         $product1->refresh();
@@ -202,6 +208,7 @@ class ProductTest extends TestCase
                 ],
                 'name' => $product1->name,
                 'rank' => $product1->rank,
+                'price' => $product1->price,
                 'description' => $product1->description,
             ]);
     }

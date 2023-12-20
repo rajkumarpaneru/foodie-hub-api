@@ -27,6 +27,7 @@ class ProductController extends Controller
             'name' => ['required', 'max:191', new UniqueForTheCategory($request->category_id)],
             'rank' => 'required|integer|min:1',
             'description' => 'nullable',
+            'price' => 'required|min:0|max:999',
             'image' => ['required', 'image', 'mimes:jpg,jpeg,png', 'max:5120'],
         ]);
 
@@ -35,6 +36,7 @@ class ProductController extends Controller
             'name' => $validated['name'],
             'rank' => $validated['rank'],
             'description' => $validated['description'],
+            'price' => $validated['price'],
         ]);
 
         $product->addMedia($validated['image'])

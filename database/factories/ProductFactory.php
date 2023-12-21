@@ -20,6 +20,7 @@ class ProductFactory extends Factory
         return [
             'category_id' => Category::factory()->create(),
             'name' => $this->faker->name,
+            'type' => $this->faker->randomElement(['vegan', 'veg', 'non-veg']),
             'description' => $this->faker->sentence,
             'rank' => $this->faker->numberBetween(1, 20),
             'price' => $this->faker->numberBetween(1, 20),

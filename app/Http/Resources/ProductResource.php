@@ -25,7 +25,8 @@ class ProductResource extends JsonResource
             ],
             'name' => $this->name,
             'rank' => $this->rank,
-            'price' => $this->price,
+            'price' => (float)$this->price,
+            'type' => $this->type,
             'image_url' => $this->image_url,
             'thumbnail_url' => $this->thumbnail_url,
             'description' => $this->description

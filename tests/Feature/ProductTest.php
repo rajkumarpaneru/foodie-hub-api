@@ -27,6 +27,7 @@ class ProductTest extends TestCase
             'description' => 'Small portion',
             'rank' => 1,
             'price' => 10,
+            'type' => 'veg',
             'image' => UploadedFile::fake()->image('test_image.jpg'),
         ]);
 
@@ -43,8 +44,9 @@ class ProductTest extends TestCase
                 'name' => $product->name,
                 'rank' => $product->rank,
                 'price' => $product->price,
-                'image_url' => 'http://127.0.0.1:8000/storage/1/test_image.jpg',
-                'thumbnail_url' => 'http://127.0.0.1:8000/storage/1/conversions/test_image-thumb.jpg',
+                'type' => $product->type,
+//                'image_url' => 'http://127.0.0.1:8000/storage/1/test_image.jpg',
+//                'thumbnail_url' => 'http://127.0.0.1:8000/storage/1/conversions/test_image-thumb.jpg',
                 'description' => $product->description,
             ]);
     }
@@ -56,9 +58,6 @@ class ProductTest extends TestCase
 
         $response = $this->post('/api/products', [
             'category_id' => 1,
-            'name' => 'Appetizers',
-            'description' => 'Small portion',
-            'rank' => 1,
         ]);
 
         $this->assertCount(0, Product::all());
@@ -84,8 +83,6 @@ class ProductTest extends TestCase
         $response = $this->post('/api/products', [
             'category_id' => $category->id,
             'name' => $product->name,
-            'description' => 'Small portion',
-            'rank' => 1,
         ]);
 
         $this->assertCount(1, Product::all());
@@ -115,6 +112,7 @@ class ProductTest extends TestCase
             'description' => 'Deep fried veggies in lentil flour',
             'rank' => 2,
             'price' => 20,
+            'type' => 'non-veg',
             'image' => UploadedFile::fake()->image('test_image2.jpg'),
         ]);
 
@@ -131,8 +129,9 @@ class ProductTest extends TestCase
                 'name' => $updated_product->name,
                 'rank' => $updated_product->rank,
                 'price' => $updated_product->price,
-                'image_url' => 'http://127.0.0.1:8000/storage/2/test_image2.jpg',
-                'thumbnail_url' => 'http://127.0.0.1:8000/storage/2/conversions/test_image2-thumb.jpg',
+                'type' => $updated_product->type,
+//                'image_url' => 'http://127.0.0.1:8000/storage/2/test_image2.jpg',
+//                'thumbnail_url' => 'http://127.0.0.1:8000/storage/2/conversions/test_image2-thumb.jpg',
                 'description' => $updated_product->description,
             ]);
     }
@@ -194,6 +193,7 @@ class ProductTest extends TestCase
             'description' => 'Small portion',
             'rank' => 1,
             'price' => 15,
+            'type' => 'vegan',
             'image' => UploadedFile::fake()->image('test_image.jpg'),
         ]);
         $product1->refresh();

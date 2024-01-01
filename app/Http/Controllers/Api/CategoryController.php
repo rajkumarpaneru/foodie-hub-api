@@ -14,7 +14,9 @@ class CategoryController extends Controller
     {
         $categories = Category::query()->orderBy('created_at', 'ASC')->get();
         $response = CategoryResource::collection($categories);
-        return response()->json($response);
+        return response()->json([
+            'data' => $response,
+        ]);
     }
 
     public function store(Request $request): JsonResponse

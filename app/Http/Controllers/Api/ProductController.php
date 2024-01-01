@@ -11,9 +11,17 @@ use Illuminate\Http\Request;
 
 class ProductController extends Controller
 {
-    public function index(): JsonResponse
+    public function index(Request $request): JsonResponse
     {
-        $products = Product::get();
+        $validated = $request->validate([
+            'category' => 'nullable|exists:categories,id',
+        ]);
+        $products = Product::when(isset($validated['category']), function ($q) use ($validated) {
+            $q->where('category_id', $validated['category']);
+        })
+            ->orderBy('products.rank', 'ASC')
+            ->get();
+
         $response = ProductResource::collection($products);
         return response()->json([
             'data' => $response,

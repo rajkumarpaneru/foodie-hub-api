@@ -15,12 +15,19 @@ class ProductController extends Controller
     {
         $validated = $request->validate([
             'category' => 'nullable|exists:categories,id',
-            'type' => 'nullable|string|in:vegan,veg,non-veg'
+            'type' => 'nullable|string|in:vegan,veg,non-veg',
+            'search' => 'nullable|string',
         ]);
+        $search = null;
+        if (isset($validated['search'])) {
+            $search = '%' . $validated['search'] . '%';
+        }
         $products = Product::when(isset($validated['category']), function ($q) use ($validated) {
             $q->where('category_id', $validated['category']);
         })->when(isset($validated['type']), function ($q) use ($validated) {
             $q->where('type', $validated['type']);
+        })->when(isset($search), function ($q) use ($search) {
+            $q->where('name', 'like', $search);
         })
             ->orderBy('products.rank', 'ASC')
             ->get();

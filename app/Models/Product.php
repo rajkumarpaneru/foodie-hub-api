@@ -40,4 +40,9 @@ class Product extends Model implements HasMedia
         else return null;
     }
 
+    public function tags()
+    {
+        return $this->belongsToMany(FoodTag::class, 'product_tags', 'product_id', 'tag_id');
+    }
+
 }

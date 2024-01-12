@@ -10,4 +10,9 @@ class FoodTag extends Model
     use HasFactory;
 
     protected $guarded = [];
+
+    public function products()
+    {
+        return $this->belongsToMany(Product::class, 'product_tags', 'tag_id', 'product_id');
+    }
 }

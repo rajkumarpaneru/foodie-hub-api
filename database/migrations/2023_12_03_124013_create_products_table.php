@@ -18,7 +18,6 @@ return new class extends Migration {
                 ->constrained('categories');
             $table->string('name');
             $table->unsignedSmallInteger('rank');
-            $table->enum('type', ['vegan', 'veg', 'non-veg']);
             $table->text('description')->nullable();
             $table->decimal('price', 5, 2);
             $table->timestamps();

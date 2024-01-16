@@ -15,7 +15,6 @@ class ProductController extends Controller
     {
         $validated = $request->validate([
             'category' => 'nullable|exists:categories,id',
-            'type' => 'nullable|string|in:vegan,veg,non-veg',
             'search' => 'nullable|string',
         ]);
         $search = null;
@@ -24,8 +23,6 @@ class ProductController extends Controller
         }
         $products = Product::when(isset($validated['category']), function ($q) use ($validated) {
             $q->where('category_id', $validated['category']);
-        })->when(isset($validated['type']), function ($q) use ($validated) {
-            $q->where('type', $validated['type']);
         })->when(isset($search), function ($q) use ($search) {
             $q->where('name', 'like', $search);
         })

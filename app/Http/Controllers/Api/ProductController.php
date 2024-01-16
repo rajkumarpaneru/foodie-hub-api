@@ -43,7 +43,6 @@ class ProductController extends Controller
             'rank' => 'required|integer|min:1',
             'description' => 'nullable',
             'price' => 'required|min:0|max:999',
-            'type' => 'required|in:vegan,veg,non-veg',
             'image' => ['required', 'image', 'mimes:jpg,jpeg,png', 'max:5120'],
         ]);
 
@@ -53,7 +52,6 @@ class ProductController extends Controller
             'rank' => $validated['rank'],
             'description' => $validated['description'],
             'price' => $validated['price'],
-            'type' => $validated['type'],
         ]);
 
         $product->addMedia($validated['image'])
@@ -78,7 +76,6 @@ class ProductController extends Controller
             'rank' => 'required|integer|min:1',
             'description' => 'nullable',
             'price' => 'required|min:0|max:999',
-            'type' => 'required|in:vegan,veg,non-veg',
             'image' => ['required', 'image', 'mimes:jpg,jpeg,png', 'max:5120'],
         ]);
 
@@ -88,7 +85,6 @@ class ProductController extends Controller
             'rank' => $validated['rank'],
             'description' => $validated['description'],
             'price' => $validated['price'],
-            'type' => $validated['type'],
         ]);
 
         if (isset($validated['image'])) {

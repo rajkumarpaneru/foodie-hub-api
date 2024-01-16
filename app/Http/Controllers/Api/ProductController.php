@@ -109,12 +109,4 @@ class ProductController extends Controller
         ], 200);
     }
 
-    public function getTypes(): JsonResponse
-    {
-        $response = ['vegan', 'veg', 'non-veg'];
-
-        return response()->json([
-            'data' => $response,
-        ], 200);
-    }
 }

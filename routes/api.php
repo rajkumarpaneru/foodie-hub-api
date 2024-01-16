@@ -26,7 +26,6 @@ Route::middleware([])->group(function () {
     Route::delete('categories/{category}', [CategoryController::class, 'destroy']);
 
     //products
-    Route::get('/products/types', [ProductController::class, 'getTypes']);
     Route::post('products', [ProductController::class, 'store']);
     Route::get('products', [ProductController::class, 'index']);
     Route::get('products/{product}', [ProductController::class, 'show']);
